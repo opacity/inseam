@@ -1,39 +1,523 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Test Product</title>
-  <link rel="icon" type="image/png" href="inseam/tabicon.png" />
-  <style>
-    body { font-family: Arial, sans-serif; padding: 40px; background: #fff; color: #000; }
-    body.dark-mode { background: #000; color: #fff; }
-    button { padding: 10px 20px; border-radius: 5px; border: none; background: #000; color: #fff; cursor: pointer; }
-    body.dark-mode button { background: #fff; color: #000; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>inse.am</title>
+<link rel="icon" type="image/png" href="inseam/tabicon.png" />
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background: #fafafa;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    color: #1a1a1a;
+    transition: background 0.3s ease, color 0.3s ease;
+    opacity: 0;
+    animation: fadeIn 0.8s ease-out forwards;
+  }
+  
+  @keyframes fadeIn { 
+    to { opacity: 1; } 
+  }
+
+  @keyframes slideDown {
+    from {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 25px 50px;
+    position: sticky;
+    top: 0;
+    background: rgba(250, 250, 250, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.02);
+    animation: slideDown 0.6s ease-out;
+    transition: background 0.3s ease, border-bottom 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  body.dark-mode header { 
+    background: rgba(10, 10, 10, 0.95); 
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  #toggle-mode { 
+    height: 40px; 
+    position: absolute; 
+    left: 50px; 
+    top: 30px;
+    cursor: pointer;
+    z-index: 1101;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  }
+
+  #toggle-mode:hover { 
+    transform: scale(1.15) rotate(15deg);
+  }
+
+  #toggle-mode:active {
+    transform: scale(0.95);
+  }
+
+  #logo { 
+    height: 80px; 
+    max-width: 500px;
+    width: auto;
+    object-fit: contain;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08));
+  }
+
+  #logo:hover {
+    transform: scale(1.05);
+  }
+
+  #cart {
+    height: 36px;
+    position: fixed;
+    top: 28px; 
+    right: 50px; 
+    z-index: 1101;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  }
+
+  #cart:hover { 
+    transform: scale(1.15);
+    animation: float 2s ease-in-out infinite;
+  }
+
+  #cart:active {
+    transform: scale(0.95);
+  }
+
+  .center-text {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 36px;
+    font-weight: 400;
+    flex-direction: column;
+    gap: 30px;
+    margin-top: 60px;
+    animation: scaleIn 0.8s ease-out 0.3s backwards;
+  }
+
+  #main-image {
+    width: 90%;
+    max-width: 550px;
+    height: auto;
+    object-fit: contain;
+    transition: transform 0.4s ease;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.08));
+  }
+
+  #main-image:hover {
+    transform: scale(1.02);
+  }
+
+  footer { 
+    width: 100%; 
+    text-align: center; 
+    padding: 30px 0 40px 0; 
+    font-size: 16px;
+    animation: fadeIn 1s ease-out 0.5s backwards;
+  }
+
+  #contact-image {
+    height: 70px;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.08));
+    cursor: pointer;
+  }
+
+  #contact-image:hover {
+    transform: scale(1.08);
+  }
+
+  body.dark-mode { 
+    background: #0a0a0a; 
+    color: #f0f0f0; 
+  }
+
+  /* Cart Sidebar */
+  .cart-dropdown {
+    position: fixed;
+    top: 0;
+    right: -420px;
+    width: 420px;
+    height: 100vh;
+    background: rgba(250, 250, 250, 0.98);
+    backdrop-filter: blur(20px);
+    color: #1a1a1a;
+    z-index: 1100;
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    transition: right 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-sizing: border-box;
+    overflow-y: auto;
+    box-shadow: -4px 0 30px rgba(0, 0, 0, 0.1);
+  }
+  
+  body.dark-mode .cart-dropdown { 
+    background: rgba(18, 18, 18, 0.98); 
+    color: #f0f0f0;
+    box-shadow: -4px 0 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .cart-dropdown.show { 
+    right: 0; 
+  }
+
+  .cart-dropdown h2 {
+    margin: 0 0 25px 0;
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.5px;
+  }
+
+  #cart-items {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+  }
+
+  #cart-items::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  #cart-items::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  #cart-items::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+  }
+
+  body.dark-mode #cart-items::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    animation: slideIn 0.3s ease-out;
+  }
+
+  body.dark-mode .cart-item {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .cart-item:hover {
+    background: rgba(0, 0, 0, 0.06);
+    transform: translateX(-4px);
+  }
+
+  body.dark-mode .cart-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .cart-item span { 
+    flex: 1; 
+    margin-right: 15px; 
+    text-overflow: ellipsis; 
+    overflow: hidden; 
+    white-space: nowrap;
+  }
+  
+  .cart-item button { 
+    flex-shrink: 0; 
+    background: rgba(220, 38, 38, 0.1);
+    border: none; 
+    font-weight: 600; 
+    cursor: pointer; 
+    color: #dc2626; 
+    font-size: 16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+
+  .cart-item button:hover {
+    background: #dc2626;
+    color: white;
+    transform: rotate(90deg) scale(1.1);
+  }
+
+  .checkout-btn-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  body.dark-mode .checkout-btn-wrapper {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .checkout-btn {
+    display: block;
+    height: 70px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    padding: 0;
+    background: transparent;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  }
+  
+  .checkout-btn:hover { 
+    transform: scale(1.08);
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15));
+  }
+
+  .checkout-btn:active {
+    transform: scale(0.98);
+  }
+
+  /* Overlay */
+  .overlay {
+    position: fixed;
+    top: 0; 
+    left: 0;
+    width: 100%; 
+    height: 100%;
+    background: rgba(0, 0, 0, 0);
+    z-index: 99;
+    display: none;
+    transition: background 0.3s ease;
+  }
+  
+  .overlay.show { 
+    display: block; 
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  body.dark-mode .overlay.show {
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  a { 
+    color: inherit; 
+    text-decoration: none;
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 500px) {
+    header {
+      padding: 15px 20px;
+    }
+
+    .cart-dropdown {
+      width: 85%;
+      right: -85%;
+      padding: 20px;
+    }
+    
+    .cart-dropdown.show {
+      right: 0;
+    }
+    
+    #cart {
+      right: 15px;
+      top: 20px;
+      height: 32px;
+    }
+    
+    #toggle-mode { 
+      left: 15px; 
+      top: 20px; 
+      height: 36px;
+    }
+    
+    #logo {
+      height: 60px;
+    }
+    
+    .center-text { 
+      font-size: 24px; 
+      margin-top: 30px; 
+    }
+
+    #main-image {
+      max-width: 400px;
+    }
+  }
+</style>
 </head>
 <body>
-  <h1>Test Product</h1>
-  <p>Price: $50</p>
-  <button onclick="addToCart()">Add to Cart</button>
-  <p><a href="/">Back to Home</a></p>
+<header>
+  <img id="toggle-mode" src="inseam/togglemode-black.png" alt="Toggle Mode" onclick="toggleMode()" />
+  <a href="/"><img id="logo" src="inseam/erasebg-transformed.png" alt="INSEAM Logo" /></a>
+</header>
 
-  <script>
-    function addToCart() {
-      let cart = JSON.parse(localStorage.getItem('cart')) || [];
-      // Add test product
-      const existing = cart.find(item => item.name === 'Test Product');
-      if(existing) existing.quantity += 1;
-      else cart.push({ name: 'Test Product', unit_amount: 5000, quantity: 1 });
+<div class="center-text">
+  <img id="main-image" src="inseam/newproductsoon.png" alt="Coming Soon" />
+</div>
 
-      localStorage.setItem('cart', JSON.stringify(cart));
-      alert('Test Product added to cart!');
-    }
+<footer>
+  <img id="contact-image" src="inseam/black-contact.png" alt="Contact" />
+</footer>
 
-    // Load dark mode preference
-    window.onload = () => {
-      if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
-    }
-  </script>
+<!-- Overlay -->
+<div class="overlay" id="overlay" onclick="toggleCartDropdown()"></div>
+
+<!-- Cart Sidebar -->
+<div class="cart-dropdown" id="cart-dropdown">
+  <h2>Your Cart</h2>
+  <div id="cart-items"></div>
+  <div class="checkout-btn-wrapper">
+    <img id="checkout-btn" class="checkout-btn" src="inseam/checkout-black.png" alt="Checkout" onclick="checkout()" />
+  </div>
+</div>
+
+<!-- Cart Button -->
+<img id="cart" src="inseam/cart-black.png" alt="Cart" onclick="toggleCartDropdown()" />
+
+<script>
+const stripe = Stripe('pk_live_51ScAKaRc59K7q31ky52DyGd5VyIUWsTLCAQr3n5anDO48Uwpca7NZPIyfRzivdIP152ggxRwzcuM9I2jEBK4B2hp00buSwoxMx');
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+// Dark mode toggle
+function toggleMode() {
+  const isDark = document.body.classList.toggle('dark-mode');
+  localStorage.setItem('darkMode', isDark ? 'true' : 'false');
+  updateImages(isDark);
+}
+
+function updateImages(isDark) {
+  document.getElementById('logo').src = 'inseam/erasebg-transformed.png';
+  document.getElementById('main-image').src = isDark ? 'inseam/newproductsoon-white.png' : 'inseam/newproductsoon.png';
+  document.getElementById('contact-image').src = isDark ? 'inseam/white-contact.png' : 'inseam/black-contact.png';
+  document.getElementById('toggle-mode').src = isDark ? 'inseam/togglemode-white.png' : 'inseam/togglemode-black.png';
+  document.getElementById('cart').src = isDark ? 'inseam/cart-white.png' : 'inseam/cart-black.png';
+  document.getElementById('checkout-btn').src = isDark ? 'inseam/checkout-white.png' : 'inseam/checkout-black.png';
+}
+
+// Render cart items
+function renderCartDropdown() {
+  const container = document.getElementById('cart-items');
+  container.innerHTML = '';
+  
+  if (cart.length === 0) {
+    container.innerHTML = '<p style="text-align: center; opacity: 0.6; margin-top: 40px;">Your cart is empty</p>';
+    return;
+  }
+  
+  cart.forEach((item, index) => {
+    const div = document.createElement('div');
+    div.className = 'cart-item';
+    div.innerHTML = `<span>${item.name} - $${item.price}</span><button onclick="removeItem(${index})">×</button>`;
+    container.appendChild(div);
+  });
+}
+
+// Remove item
+function removeItem(index) {
+  cart.splice(index, 1);
+  localStorage.setItem('cart', JSON.stringify(cart));
+  renderCartDropdown();
+}
+
+// Toggle cart sidebar with overlay
+function toggleCartDropdown() {
+  const dropdown = document.getElementById('cart-dropdown');
+  const overlay = document.getElementById('overlay');
+
+  renderCartDropdown();
+  dropdown.classList.toggle('show');
+  overlay.classList.toggle('show');
+}
+
+// Checkout
+function checkout() {
+  if(cart.length === 0){ 
+    alert('Your cart is empty.'); 
+    return; 
+  }
+  
+  fetch('http://localhost:3000/create-checkout-session',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({items:cart})
+  }).then(res => res.json())
+  .then(session => stripe.redirectToCheckout({sessionId:session.id}))
+  .then(result => { if(result.error) alert(result.error.message) })
+  .catch(err => console.error(err));
+}
+
+// Load dark mode on page load
+window.onload = () => {
+  const darkMode = localStorage.getItem('darkMode') === 'true';
+  if(darkMode) document.body.classList.add('dark-mode');
+  updateImages(darkMode);
+}
+</script>
 </body>
 </html>
