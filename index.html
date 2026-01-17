@@ -21,39 +21,72 @@
     min-height: 100vh;
     color: #1a1a1a;
     transition: background 0.3s ease, color 0.3s ease;
-    opacity: 0;
-    animation: fadeIn 0.8s ease-out forwards;
-  }
-  
-  @keyframes fadeIn { 
-    to { opacity: 1; } 
+    overflow-x: hidden;
   }
 
-  @keyframes slideDown {
+  @keyframes fadeInUp {
     from {
-      transform: translateY(-100%);
       opacity: 0;
+      transform: translateY(30px);
     }
     to {
-      transform: translateY(0);
       opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideInFromTop {
+    from {
+      opacity: 0;
+      transform: translateY(-100px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideInFromLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInFromRight {
+    from {
+      opacity: 0;
+      transform: translateX(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
     }
   }
 
   @keyframes scaleIn {
     from {
-      transform: scale(0.9);
       opacity: 0;
+      transform: scale(0.8);
     }
     to {
-      transform: scale(1);
       opacity: 1;
+      transform: scale(1);
     }
   }
 
   @keyframes float {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-10px); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
   }
 
   header {
@@ -68,8 +101,9 @@
     z-index: 100;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.02);
-    animation: slideDown 0.6s ease-out;
     transition: background 0.3s ease, border-bottom 0.3s ease, box-shadow 0.3s ease;
+    opacity: 0;
+    animation: slideInFromTop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   }
   
   body.dark-mode header { 
@@ -87,6 +121,8 @@
     z-index: 1101;
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    opacity: 0;
+    animation: slideInFromLeft 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards;
   }
 
   #toggle-mode:hover { 
@@ -104,6 +140,8 @@
     object-fit: contain;
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
     filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08));
+    opacity: 0;
+    animation: scaleIn 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
   }
 
   #logo:hover {
@@ -119,6 +157,8 @@
     cursor: pointer;
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    opacity: 0;
+    animation: slideInFromRight 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards;
   }
 
   #cart:hover { 
@@ -140,7 +180,6 @@
     flex-direction: column;
     gap: 30px;
     margin-top: 60px;
-    animation: scaleIn 0.8s ease-out 0.3s backwards;
   }
 
   #main-image {
@@ -150,10 +189,13 @@
     object-fit: contain;
     transition: transform 0.4s ease;
     filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.08));
+    opacity: 0;
+    animation: fadeInUp 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s forwards;
   }
 
   #main-image:hover {
     transform: scale(1.02);
+    animation: pulse 2s ease-in-out infinite;
   }
 
   footer { 
@@ -161,7 +203,8 @@
     text-align: center; 
     padding: 30px 0 40px 0; 
     font-size: 16px;
-    animation: fadeIn 1s ease-out 0.5s backwards;
+    opacity: 0;
+    animation: fadeInUp 1s ease-out 0.9s forwards;
   }
 
   #contact-image {
@@ -414,7 +457,7 @@
 <body>
 <header>
   <img id="toggle-mode" src="inseam/togglemode-black.png" alt="Toggle Mode" onclick="toggleMode()" />
-  <a href="/"><img id="logo" src="inseam/erasebg-transformed.png" alt="INSEAM Logo" /></a>
+  <a href="/"><img id="logo" src="inseam/black-text.png" alt="INSEAM Logo" /></a>
 </header>
 
 <div class="center-text">
@@ -452,7 +495,7 @@ function toggleMode() {
 }
 
 function updateImages(isDark) {
-  document.getElementById('logo').src = 'inseam/erasebg-transformed.png';
+  document.getElementById('logo').src = isDark ? 'inseam/white-text.png' : 'inseam/black-text.png';
   document.getElementById('main-image').src = isDark ? 'inseam/newproductsoon-white.png' : 'inseam/newproductsoon.png';
   document.getElementById('contact-image').src = isDark ? 'inseam/white-contact.png' : 'inseam/black-contact.png';
   document.getElementById('toggle-mode').src = isDark ? 'inseam/togglemode-white.png' : 'inseam/togglemode-black.png';
