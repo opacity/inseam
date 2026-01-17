@@ -6,7 +6,6 @@
 <title>inse.am</title>
 <link rel="icon" type="image/png" href="inseam/tabicon.png" />
 <script src="https://js.stripe.com/v3/"></script>
-
 <style>
   body {
     margin: 0;
@@ -21,7 +20,6 @@
     opacity: 0;
     animation: fadeIn 1s forwards;
   }
-
   @keyframes fadeIn { to { opacity: 1; } }
 
   header {
@@ -34,37 +32,35 @@
     background: #fff;
     z-index: 100;
   }
-
   body.dark-mode header { background: #000; }
 
-  #toggle-mode {
-    height: 40px;
-    position: absolute;
-    left: 40px;
+  #toggle-mode { 
+    height: 40px; 
+    position: absolute; 
+    left: 40px; 
     top: 25px;
     cursor: pointer;
     z-index: 1101;
     transition: transform 0.3s ease;
   }
 
-  #logo {
-    height: 80px;
+  #logo { 
+    height: 60px; 
+    max-width: 400px;
+    width: auto;
+    object-fit: contain;
   }
 
   #cart {
     height: 32px;
     position: fixed;
-    top: 25px;
-    right: 40px;
+    top: 25px; 
+    right: 40px; 
     z-index: 1101;
     transition: transform 0.3s ease;
   }
 
-  #cart:hover,
-  #toggle-mode:hover,
-  #logo:hover {
-    transform: scale(1.1);
-  }
+  #cart:hover, #toggle-mode:hover, #logo:hover { transform: scale(1.1); }
 
   .center-text {
     flex: 1;
@@ -85,17 +81,9 @@
     object-fit: contain;
   }
 
-  footer {
-    width: 100%;
-    text-align: center;
-    padding-bottom: 20px;
-    font-size: 16px;
-  }
+  footer { width: 100%; text-align: center; padding-bottom: 20px; font-size: 16px; }
 
-  body.dark-mode {
-    background: #000;
-    color: #fff;
-  }
+  body.dark-mode { background: #000; color: #fff; }
 
   /* Cart Sidebar */
   .cart-dropdown {
@@ -104,6 +92,7 @@
     right: -400px;
     width: 400px;
     height: 100vh;
+    max-height: 100%;
     background: #e0e0e0;
     color: #000;
     z-index: 1100;
@@ -111,161 +100,178 @@
     flex-direction: column;
     padding: 20px;
     transition: right 0.3s ease;
+    box-sizing: border-box;
     overflow-y: auto;
   }
-
-  body.dark-mode .cart-dropdown {
-    background: #0a0a0a;
-    color: #fff;
-  }
+  body.dark-mode .cart-dropdown { background: #0a0a0a; color: #fff; }
 
   .cart-dropdown.show { right: 0; }
+
+  #cart-items {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 5px;
+  }
 
   .cart-item {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 16px;
+    white-space: nowrap;
+    overflow: hidden;
     font-size: 18px;
   }
-
-  .cart-item button {
-    background: none;
-    border: none;
-    color: red;
-    cursor: pointer;
-    font-size: 18px;
-  }
+  .cart-item span { flex: 1; margin-right: 15px; text-overflow: ellipsis; overflow: hidden; }
+  .cart-item button { flex-shrink: 0; background: transparent; border: none; font-weight: bold; cursor: pointer; color: red; font-size: 18px; }
 
   .checkout-btn-wrapper {
-    margin-top: auto;
     display: flex;
     justify-content: flex-end;
+    margin-top: auto;
+    padding-right: 10px;
+    padding-bottom: 5px;
   }
-
   .checkout-btn {
+    display: block;
     height: 70px;
     cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    padding: 0;
+    background: transparent;
     transition: transform 0.2s ease;
   }
-
   .checkout-btn:hover { transform: scale(1.05); }
 
+  /* Overlay behind cart */
   .overlay {
     position: fixed;
-    inset: 0;
+    top:0; left:0;
+    width:100%; height:100%;
     background: rgba(0,0,0,0.3);
-    display: none;
     z-index: 100;
+    display: none;
   }
+  .overlay.show { display:block; }
 
-  .overlay.show { display: block; }
+  a { color: inherit; text-decoration: underline; }
 
+  /* Mobile adjustments */
   @media (max-width: 500px) {
-    .cart-dropdown { width: 80%; right: -80%; }
-    .cart-dropdown.show { right: 0; }
-    #cart { right: 10px; top: 20px; }
+    .cart-dropdown {
+      width: 80%;
+      right: -80%;
+    }
+    .cart-dropdown.show {
+      right: 0;
+    }
+    #cart {
+      right: 10px;
+      top: 20px;
+    }
     #toggle-mode { left: 10px; top: 20px; }
     header { padding: 10px 20px; }
+    .center-text { font-size: 24px; margin-top: 20px; }
   }
 </style>
 </head>
-
 <body>
-
 <header>
-  <img id="toggle-mode" src="inseam/togglemode-black.png" onclick="toggleMode()" />
-  <a href="/">
-    <!-- LOGO REPLACED HERE -->
-    <img id="logo" src="erasebg-transformed.png" alt="INSEAM Logo" />
-  </a>
+  <img id="toggle-mode" src="inseam/togglemode-black.png" alt="Toggle Mode" onclick="toggleMode()" />
+  <a href="/"><img id="logo" src="inseam/erasebg-transformed.png" alt="INSEAM Logo" /></a>
 </header>
 
 <div class="center-text">
-  <img id="main-image" src="inseam/newproductsoon.png" />
+  <img id="main-image" src="inseam/newproductsoon.png" alt="Coming Soon" />
 </div>
 
 <footer>
-  <img id="contact-image" src="inseam/black-contact.png" style="height:70px;" />
+  <img id="contact-image" src="inseam/black-contact.png" alt="Contact" style="height:70px;" />
 </footer>
 
+<!-- Overlay -->
 <div class="overlay" id="overlay" onclick="toggleCartDropdown()"></div>
 
+<!-- Cart Sidebar -->
 <div class="cart-dropdown" id="cart-dropdown">
   <div id="cart-items"></div>
   <div class="checkout-btn-wrapper">
-    <img id="checkout-btn" class="checkout-btn"
-         src="inseam/checkout-black.png"
-         onclick="checkout()" />
+    <img id="checkout-btn" class="checkout-btn" src="inseam/checkout-black.png" alt="Checkout" onclick="checkout()" />
   </div>
 </div>
 
-<img id="cart" src="inseam/cart-black.png" onclick="toggleCartDropdown()" />
+<!-- Cart Button -->
+<img id="cart" src="inseam/cart-black.png" alt="Cart" onclick="toggleCartDropdown()" />
 
 <script>
 const stripe = Stripe('pk_live_51ScAKaRc59K7q31ky52DyGd5VyIUWsTLCAQr3n5anDO48Uwpca7NZPIyfRzivdIP152ggxRwzcuM9I2jEBK4B2hp00buSwoxMx');
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
+// Dark mode toggle
 function toggleMode() {
   const isDark = document.body.classList.toggle('dark-mode');
-  localStorage.setItem('darkMode', isDark);
+  localStorage.setItem('darkMode', isDark ? 'true' : 'false');
   updateImages(isDark);
 }
 
 function updateImages(isDark) {
-  document.getElementById('main-image').src =
-    isDark ? 'inseam/newproductsoon-white.png' : 'inseam/newproductsoon.png';
-  document.getElementById('contact-image').src =
-    isDark ? 'inseam/white-contact.png' : 'inseam/black-contact.png';
-  document.getElementById('toggle-mode').src =
-    isDark ? 'inseam/togglemode-white.png' : 'inseam/togglemode-black.png';
-  document.getElementById('cart').src =
-    isDark ? 'inseam/cart-white.png' : 'inseam/cart-black.png';
-  document.getElementById('checkout-btn').src =
-    isDark ? 'inseam/checkout-white.png' : 'inseam/checkout-black.png';
-  // logo intentionally NOT changed
+  document.getElementById('logo').src = 'inseam/erasebg-transformed.png';
+  document.getElementById('main-image').src = isDark ? 'inseam/newproductsoon-white.png' : 'inseam/newproductsoon.png';
+  document.getElementById('contact-image').src = isDark ? 'inseam/white-contact.png' : 'inseam/black-contact.png';
+  document.getElementById('toggle-mode').src = isDark ? 'inseam/togglemode-white.png' : 'inseam/togglemode-black.png';
+  document.getElementById('cart').src = isDark ? 'inseam/cart-white.png' : 'inseam/cart-black.png';
+  document.getElementById('checkout-btn').src = isDark ? 'inseam/checkout-white.png' : 'inseam/checkout-black.png';
 }
 
+// Render cart items
 function renderCartDropdown() {
   const container = document.getElementById('cart-items');
   container.innerHTML = '';
-  cart.forEach((item, i) => {
-    container.innerHTML +=
-      `<div class="cart-item">
-         <span>${item.name} - $${item.price}</span>
-         <button onclick="removeItem(${i})">x</button>
-       </div>`;
+  cart.forEach((item, index) => {
+    const div = document.createElement('div');
+    div.className = 'cart-item';
+    div.innerHTML = `<span>${item.name} - $${item.price}</span><button onclick="removeItem(${index})">x</button>`;
+    container.appendChild(div);
   });
 }
 
-function removeItem(i) {
-  cart.splice(i, 1);
+// Remove item
+function removeItem(index) {
+  cart.splice(index, 1);
   localStorage.setItem('cart', JSON.stringify(cart));
   renderCartDropdown();
 }
 
+// Toggle cart sidebar with overlay
 function toggleCartDropdown() {
+  const dropdown = document.getElementById('cart-dropdown');
+  const overlay = document.getElementById('overlay');
+
   renderCartDropdown();
-  document.getElementById('cart-dropdown').classList.toggle('show');
-  document.getElementById('overlay').classList.toggle('show');
+  dropdown.classList.toggle('show');
+  overlay.classList.toggle('show');
 }
 
+// Checkout
 function checkout() {
-  if (!cart.length) return alert('Your cart is empty.');
-  fetch('http://localhost:3000/create-checkout-session', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ items: cart })
-  })
-  .then(r => r.json())
-  .then(s => stripe.redirectToCheckout({ sessionId: s.id }));
+  if(cart.length === 0){ alert('Your cart is empty.'); return; }
+  fetch('http://localhost:3000/create-checkout-session',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({items:cart})
+  }).then(res => res.json())
+  .then(session => stripe.redirectToCheckout({sessionId:session.id}))
+  .then(result => { if(result.error) alert(result.error.message) })
+  .catch(err => console.error(err));
 }
 
+// Load dark mode on page load
 window.onload = () => {
-  const dark = localStorage.getItem('darkMode') === 'true';
-  if (dark) document.body.classList.add('dark-mode');
-  updateImages(dark);
-};
+  const darkMode = localStorage.getItem('darkMode') === 'true';
+  if(darkMode) document.body.classList.add('dark-mode');
+  updateImages(darkMode);
+}
 </script>
-
 </body>
 </html>
